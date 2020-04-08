@@ -1,0 +1,77 @@
+#include <bits/stdc++.h>
+using namespace std;
+int n,cnt;
+vector<pair<int,int>> v,res;
+void fun(bool **mat,int rno,bool col[])
+{
+	if(rno>n)
+	{
+		cnt++;
+		for(int i=0;i<n;i++) res.push_back(v[i]);
+		//v.clear();
+		return ;
+	}
+	for(int i=1;i<=n;)
+	{
+		//cout<<rno<<" "<<i<<"   ";
+		//cout<<i<<endl;
+		if(col[i]==0)
+		{
+			for(int j=1;j<=n;j++)
+			{
+				if(rno-j>0 && i-j>0 && mat[rno-j][i-j]) goto start;
+			}
+			for(int j=1;j<=n;j++)
+			{
+				if(rno+j<=n && i+j<=n && mat[rno+j][i+j]) goto start;
+			}
+			for(int j=1;j<=n;j++)
+			{
+				if(rno-j>0 && i+j<=n && mat[rno-j][i+j]) goto start;
+			}
+			for(int j=1;j<=n;j++)
+			{
+				if(rno+j<=n && i-j>0 && mat[rno+j][i-j]) goto start;
+			}
+			//cout<<rno<<" "<<i;
+			mat[rno][i]=1;
+			v.push_back({rno,i});
+			col[i]=1;
+			//cout<<endl;
+			fun(mat,rno+1,col);
+			mat[rno][i]=0;
+			col[i]=0;
+			v.pop_back();
+		}
+		start:
+		i++;
+	}
+}
+int main() {
+	cin>>n; // size of chessboard
+	bool **mat=new bool*[n+3];	
+	for(int i=0;i<=n;i++) mat[i]=new bool[n+3];
+	bool col[n+3]={0};
+	memset(mat,0,sizeof(mat));
+	fun(mat,1,col);
+	cout<<cnt<<endl;  // number of ways 
+	for(int i=0;i<res.size();)
+	{
+		for(int j=0;j<n;j++)
+		{
+			cout<<"{"<<res[i+j].first<<" "<<res[i+j].second<<"} ";  // all possible combinations
+		}
+		cout<<" ";
+		i+=n;
+	}
+	/*while(res.size())
+	{
+		for(int i=0;i<4;i++)
+		{
+			cout<<"{"<<res.back().first<<" "<<res.back().second<<"} ";
+			res.pop_back();
+		}
+		cout<<" ";
+	}*/
+	return 0;
+}
