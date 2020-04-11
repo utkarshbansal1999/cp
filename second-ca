@@ -1,0 +1,134 @@
+#include<bits/stdc++.h>
+using namespace std;
+struct det
+{
+    long long int data;
+    det *l=NULL,*r=NULL,*par=NULL;
+    //det(){}
+    det(long long int da,det *pa):data(da),par(pa){}
+};
+det *start=NULL;
+void addval(det *cur,int x,det *pa)
+{
+        if(cur->data<x) 
+        {
+            if(cur->r) addval(cur->r,x,cur);
+            else cur->r=new det(x,cur);
+        }
+        else 
+        {
+            if(cur->l) addval(cur->l,x,cur);
+            else cur->l=new det(x,cur);
+        }
+}
+det* justlarger(det *cur,int x)
+{
+    if(cur==NULL) return NULL;
+    if(cur->data<=x) 
+    {
+        if(cur->r)
+        {
+            return justlarger(cur->r,x);
+            
+        }
+        else 
+        {
+            while(cur->par!=NULL && cur->par->r==cur)
+            {
+                cur=cur->par;
+            }
+            return cur->par;
+        }
+    }
+    if(cur->data>x) 
+    {
+        if(cur->l) return justlarger(cur->l,x);
+        else 
+        {
+            return cur;
+        }
+    }
+    return NULL;
+}
+det* justs(det *cur,int x)
+{
+    if(cur==NULL) return NULL;
+    //cout<<cur->data<<endl;
+    if(cur->data<x) 
+    {
+        if(cur->r) return justs(cur->r,x);
+        else
+        {
+            return cur;
+        }
+    }
+    if(cur->data>=x) 
+    {
+        if(cur->l) 
+        {
+           return justs(cur->l,x);
+        }
+        else 
+        {
+            while(cur->par!=NULL && cur->par->l==cur)
+            {
+                cur=cur->par;
+            }
+            return cur->par;
+        }
+    }
+    return NULL;
+}
+void inorder(det *cur)
+{
+    if(cur==NULL) return ;
+    inorder(cur->l);
+    cout<<cur->data<<" ";
+    if(cur->par) cout<<cur->par->data;
+    cout<<endl;
+    inorder(cur->r);
+}
+int main()
+{
+    int n; cin>>n;
+    map<int,int> mp;
+    for(int i=0;i<n;i++)
+    {
+        int x; cin>>x;
+        if(start==NULL) start=new det(x,NULL);
+        else if(mp.find(x)==mp.end()) addval(start,x,NULL);
+        mp[x]++;
+    }
+    int q; cin>>q;
+    while(q--)
+    {
+        int ty;
+        long long int x; cin>>ty>>x;
+        if(ty==1)
+        {
+            if(mp.find(x)==mp.end()) addval(start,x,NULL);
+            mp[x]++;
+        }
+        if(ty==2)
+        {
+            if(mp.find(x)==mp.end()) cout<<0<<endl;
+            else cout<<mp[x]<<endl;
+        }
+        if(ty==3)
+        {
+            det *p=justlarger(start,x);
+            if(p==NULL) cout<<-1<<endl;
+            else cout<<p->data<<endl;
+        }
+        if(ty==4)
+        {
+            // cout<<endl;
+            // inorder(start);
+            // cout<<endl;
+            det *p=justs(start,x);
+            if(p==NULL) cout<<-1<<endl;
+            else cout<<p->data<<endl;
+        }
+    }
+    return 0;
+}
